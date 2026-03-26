@@ -1,78 +1,82 @@
 import java.util.*;
-public class Problem{
-    static class Asset{
-        String name;
-        double returnRate;
-        double volatility;
-        Asset(String name,double returnRate,double volatility){
-            this.name=name;
-            this.returnRate=returnRate;
-            this.volatility=volatility;
+public class problem{
+    static int linearFirst(String[] arr,String target){
+        int comp=0;
+        for(int i=0;i<arr.length;i++){
+            comp++;
+            if(arr[i].equals(target)){
+                System.out.println("Linear First Index: "+i);
+                System.out.println("Comparisons: "+comp);
+                return i;
+            }
         }
+        System.out.println("Comparisons: "+comp);
+        return -1;
     }
-    static void mergeSort(Asset[] arr,int l,int r){
-        if(l<r){
-            int m=(l+r)/2;
-            mergeSort(arr,l,m);
-            mergeSort(arr,m+1,r);
-            merge(arr,l,m,r);
+    static int linearLast(String[] arr,String target){
+        int comp=0,res=-1;
+        for(int i=0;i<arr.length;i++){
+            comp++;
+            if(arr[i].equals(target))res=i;
         }
+        System.out.println("Linear Last Index: "+res);
+        System.out.println("Comparisons: "+comp);
+        return res;
     }
-    static void merge(Asset[] arr,int l,int m,int r){
-        int n1=m-l+1,n2=r-m;
-        Asset[] L=new Asset[n1];
-        Asset[] R=new Asset[n2];
-        for(int i=0;i<n1;i++)L[i]=arr[l+i];
-        for(int j=0;j<n2;j++)R[j]=arr[m+1+j];
-        int i=0,j=0,k=l;
-        while(i<n1&&j<n2){
-            if(L[i].returnRate<=R[j].returnRate){
-                arr[k++]=L[i++];
+    static int binarySearch(String[] arr,String target){
+        int low=0,high=arr.length-1,comp=0;
+        while(low<=high){
+            int mid=(low+high)/2;
+            comp++;
+            int cmp=arr[mid].compareTo(target);
+            if(cmp==0){
+                System.out.println("Binary Found Index: "+mid);
+                System.out.println("Comparisons: "+comp);
+                return mid;
+            }else if(cmp<0){
+                low=mid+1;
             }else{
-                arr[k++]=R[j++];
+                high=mid-1;
             }
         }
-        while(i<n1)arr[k++]=L[i++];
-        while(j<n2)arr[k++]=R[j++];
+        System.out.println("Comparisons: "+comp);
+        return -1;
     }
-    static void quickSort(Asset[] arr,int low,int high){
-        if(low<high){
-            int pi=partition(arr,low,high);
-            quickSort(arr,low,pi-1);
-            quickSort(arr,pi+1,high);
-        }
-    }
-    static int partition(Asset[] arr,int low,int high){
-        int mid=(low+high)/2;
-        if(arr[low].returnRate>arr[mid].returnRate)swap(arr,low,mid);
-        if(arr[low].returnRate>arr[high].returnRate)swap(arr,low,high);
-        if(arr[mid].returnRate>arr[high].returnRate)swap(arr,mid,high);
-        Asset pivot=arr[mid];
-        swap(arr,mid,high);
-        int i=low-1;
-        for(int j=low;j<high;j++){
-            if(arr[j].returnRate>pivot.returnRate||(arr[j].returnRate==pivot.returnRate&&arr[j].volatility<pivot.volatility)){
-                i++;
-                swap(arr,i,j);
+    static int countOccurrences(String[] arr,String target){
+        int first=-1,last=-1;
+        int low=0,high=arr.length-1;
+        while(low<=high){
+            int mid=(low+high)/2;
+            if(arr[mid].equals(target)){
+                first=mid;
+                high=mid-1;
+            }else if(arr[mid].compareTo(target)<0){
+                low=mid+1;
+            }else{
+                high=mid-1;
             }
         }
-        swap(arr,i+1,high);
-        return i+1;
-    }
-    static void swap(Asset[] arr,int i,int j){
-        Asset temp=arr[i];
-        arr[i]=arr[j];
-        arr[j]=temp;
+        low=0;high=arr.length-1;
+        while(low<=high){
+            int mid=(low+high)/2;
+            if(arr[mid].equals(target)){
+                last=mid;
+                low=mid+1;
+            }else if(arr[mid].compareTo(target)<0){
+                low=mid+1;
+            }else{
+                high=mid-1;
+            }
+        }
+        if(first==-1)return 0;
+        return last-first+1;
     }
     public static void main(String[] args){
-        Asset[] arr={
-                new Asset("AAPL",12,5),
-                new Asset("TSLA",8,7),
-                new Asset("GOOG",15,4)
-        };
-        mergeSort(arr,0,arr.length-1);
-        for(Asset a:arr)System.out.println(a.name+":"+a.returnRate);
-        quickSort(arr,0,arr.length-1);
-        for(Asset a:arr)System.out.println(a.name+":"+a.returnRate);
+        String[] arr={"accA","accB","accB","accC"};
+        String target="accB";
+        linearFirst(arr,target);
+        linearLast(arr,target);
+        binarySearch(arr,target);
+        System.out.println("Count: "+countOccurrences(arr,target));
     }
 }
